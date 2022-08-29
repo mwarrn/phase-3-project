@@ -1,38 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
+import WorkzoneContainer from "./components/WorkzoneContainer";
+import EmployeeContainer from "./components/EmployeeContainer";
+import AddEmployee from "./components/AddEmployee";
 import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
+  const [workzones, setWorkzones] = useState([]);
 
-  /* Fetches the data from the backend and logging it to the console. */
   useEffect(() => {
-    fetch("http://localhost:9292/todos")
-      .then((r) => r.json())
-      .then((data) => console.log(data));
+    fetch("http://localhost:9292/workzones")
+      .then((res) => res.json())
+      .then((res) => { setWorkzones(res); });
   }, []);
 
-  function handleAddTodo(e) {
-    e.preventDefault();
-  }
-
-  /* Sends a DELETE request to the server, which deletes the todo with the given id */
-  function handleDeleteTodo() {
-    fetch(`http://localhost:9292/todos/${id}`, {
-      method: "DELETE",
-    });
-  }
-
-  /* Sends a PATCH request to the server, which updates the todo with the given id */
-  function handleUpdateTodo(e) {
-    e.preventDefault();
-
-    fetch(`http://localhost:9292/todos/${id}`, {
-      method: "PATCH",
-    })
-  }
-
   return (
-    <div>
-      <h1>Todo List</h1>
+    <div className="container">
+        <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Navigate to="/workzones" />} />
+          <Route
+            path="/workzones"
+            element={<WorkzoneContainer workzones={workzones} />}
+          />
+          <Route path="/workzones/:id/employees" element={<EmployeeContainer />} />
+          <Route path="/addemployees" element={<AddEmployee />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
